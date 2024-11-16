@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            font-family: Arial, sans-serif;
+        }
+
+        .calculator {
+            border: 5px solid #000;
+            border-radius: 20px;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.4);
+            width: 360px;
+            background: #111;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .display {
+            text-align: right;
+            padding: 15px 20px;
+            font-size: 2rem;
+            color: #0f0;
+            background: #222;
+            font-family: 'Digital-7', sans-serif;
+            border-radius: 5px;
+            box-shadow: inset 0px 0px 5px rgba(0, 255, 0, 0.5);
+        }
+
+        @font-face {
+            font-family: 'Digital-7';
+            src: url('https://fonts.cdnfonts.com/s/62942/Digital7-Regular.woff') format('woff');
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            padding: 15px;
+            font-size: 1.5rem;
+            color: #fff;
+            background: linear-gradient(145deg, #444, #222);
+            border: 1px solid #000;
+            border-radius: 5px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .buttons button:hover {
+            background: linear-gradient(145deg, #555, #333);
+        }
+
+        .buttons button:active {
+            box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .buttons .equals {
+            grid-column: span 2;
+            background: linear-gradient(145deg, #ff4444, #cc0000);
+        }
+
+        .buttons .equals:hover {
+            background: linear-gradient(145deg, #ee3333, #bb0000);
+        }
+
+        .buttons .operator {
+            background: linear-gradient(145deg, #007bff, #0056b3);
+        }
+
+        .buttons .operator:hover {
+            background: linear-gradient(145deg, #0056b3, #003f8a);
+        }
+
+        .buttons .special {
+            background: linear-gradient(145deg, #ff9500, #cc7700);
+        }
+
+        .buttons .special:hover {
+            background: linear-gradient(145deg, #ff7f00, #cc6100);
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display" id="display">OFF</div>
+        <div class="buttons">
+            <button class="special" onclick="turnOn()">ON</button>
+            <button class="special" onclick="clearDisplay()">AC</button>
+            <button class="operator" onclick="setOperation('/')">÷</button>
+            <button class="operator" onclick="setOperation('*')">×</button>
+
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="setOperation('-')">−</button>
+
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button class="operator" onclick="setOperation('+')">+</button>
+
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button class="special" onclick="clearCurrent()">C</button>
+
+            <button onclick="appendNumber('0')">0</button>
+            <button onclick="appendNumber('.')">.</button>
+            <button class="equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let firstOperand = '';
+        let secondOperand = '';
+        let currentOperation = null;
+        let isOn = false; // Power state: Calculator starts off
+
+        function turnOn() {
+            isOn = true; // Enable the calculator
+            clearDisplay();
+        }
+
+        function appendNumber(number) {
+            if (!isOn) return; // Block input if calculator is off
+            if (currentOperation === null) {
+                firstOperand += number;
+                display.innerText = firstOperand || '0';
+            } else {
+                secondOperand += number;
+                display.innerText = secondOperand || '0';
+            }
+        }
+
+        function setOperation(operation) {
+            if (!isOn || firstOperand === '') return;
+            if (secondOperand !== '') {
+                calculate();
+            }
+            currentOperation = operation;
+        }
+
+        function calculate() {
+            if (!isOn) return;
+            let result;
+            let a = parseFloat(firstOperand);
+            let b = parseFloat(secondOperand);
+            if (isNaN(a) || isNaN(b)) return;
+
+            switch (currentOperation) {
+                case '+':
+                    result = a + b;
+                    break;
+                case '-':
+                    result = a - b;
+                    break;
+                case '*':
+                    result = a * b;
+                    break;
+                case '/':
+                    result = a / b;
+                    break;
+                default:
+                    return;
+            }
+
+            display.innerText = result;
+            firstOperand = result.toString();
+            secondOperand = '';
+            currentOperation = null;
+        }
+
+        function clearDisplay() {
+            if (!isOn) return;
+            display.innerText = '0';
+            firstOperand = '';
+            secondOperand = '';
+            currentOperation = null;
+        }
+
+        function clearCurrent() {
+            if (!isOn) return;
+            if (secondOperand) {
+                secondOperand = '';
+                display.innerText = '0';
+            } else {
+                firstOperand = '';
+                display.innerText = '0';
+            }
+        }
+    </script>
+</body>
+</html>
